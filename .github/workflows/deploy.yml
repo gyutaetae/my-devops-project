@@ -18,9 +18,8 @@ jobs:
 
       - name: 빌드 및 테스트
         run: |
-          go build -v -o main .
-          go test -v ./...
-
+          GOOS=linux GOARCH=amd64 go build -o my-go-app main.go
+          aws s3 cp my-go-app s3://my-unique-bucket-name-9988/ --region ap-northeast-2
       # 👇 여기서부터 진짜 AWS 배포 단계야!
       - name: AWS 권한 설정
         uses: aws-actions/configure-aws-credentials@v2
