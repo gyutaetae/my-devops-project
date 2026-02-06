@@ -1,0 +1,6 @@
+.terraform/
+*.zip
+terraform-provider-*
+terraform.tfstate*
+.terraform.lock.hcl
+main

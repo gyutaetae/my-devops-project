@@ -1,0 +1,36 @@
+name: Go-S3-Real-Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 코드 가져오기
+        uses: actions/checkout@v3
+
+      - name: Go 환경 설정
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+
+      - name: 빌드 및 테스트
+        run: |
+          go build -v -o main .
+          go test -v ./...
+
+      # 👇 여기서부터 진짜 AWS 배포 단계야!
+      - name: AWS 권한 설정
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2 # 서울 리전 (네 버킷 위치에 맞춰줘)
+
+      - name: S3에 파일 업로드
+        run: |
+          # 'main' 빌드 파일이나 특정 텍스트 파일을 업로드해볼까?
+          echo "GitHub Actions에서 배포된 파일입니다!" > deploy-test.txt
+          aws s3 cp deploy-test.txt s3://my-unique-bucket-name-9988 --region ap-northeast-2
